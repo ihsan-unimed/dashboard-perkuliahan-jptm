@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Monitoring Perkuliahan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Notifikasi kecil saat sedang memuat / menyimpan data -->
+<div class="page-loading-msg" id="page-loading-msg">
+  <span class="spinner"></span>
+  <span id="page-loading-text">Memuat data mahasiswa...</span>
+</div>
+
+<!-- ============================================================
+     HALAMAN 1 — LOGIN / INPUT NIM
+     ============================================================ -->
+<div id="page-login">
+  <div class="login-card">
+    <div class="login-mark">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Lambang_Universitas_Negeri_Medan.png" alt="DM">
+    </div>
+    <h1>Dashboard Monitoring Perkuliahan</h1>
+    <p class="login-sub">Monitoring Kehadiran, Tugas, Nilai, dan Responsible AI Practice</p>
+
+    <div class="login-form">
+      <label for="matkul-select">Mata Kuliah</label>
+      <select id="matkul-select">
+        <option value="">Memuat daftar mata kuliah...</option>
+      </select>
+
+      <label for="kelas-select" style="margin-top:14px;">Kelas</label>
+      <select id="kelas-select">
+        <option value="">Pilih mata kuliah dahulu</option>
+      </select>
+
+      <label for="nim-input" style="margin-top:14px;">Nomor Induk Mahasiswa (NIM)</label>
+      <input id="nim-input" type="text" inputmode="numeric" placeholder="Contoh: 0123456789" autocomplete="off">
+      <div class="login-error" id="login-error"></div>
+
+      <button class="btn-primary" id="btn-login">
+        <span class="spinner"></span>
+        <span class="btn-label">Lihat Dashboard</span>
+      </button>
+
+   <!--   <button class="btn-primary" id="btn-reload-matkul">
+        <span class="spinner"></span> 
+        <span class="btn-label">Muat ulang daftar mata kuliah</span>
+      </button> -->
+      
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     HALAMAN 2 — DASHBOARD
+     ============================================================ -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div id="page-dashboard">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="mark">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Lambang_Universitas_Negeri_Medan.png" alt="DM">
+      </div>
+      <div class="name">Monitoring Perkuliahan<span>Portal Mahasiswa</span></div>
+    </div>
+
+    <nav>
+      <button class="nav-item active" data-panel="dashboard">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-panel="kehadiran">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/><path d="M8 14l2.5 2.5L16 11"/></svg>
+        Kehadiran
+      </button>
+      <button class="nav-item" data-panel="tugas">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+        Tugas &amp; Nilai
+      </button>
+      <button class="nav-item" data-panel="rapi">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        RAPI
+      </button>
+      <button class="nav-item" data-panel="profil">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+        Profil
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-ghost-light" id="btn-ganti-nim">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Keluar / Ganti NIM
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="btn-open-sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div>
+          <h1>Selamat Datang!</h1>
+          <h1 id="welcome-title"></h1>
+          <div class="meta">
+            <span>NIM: <b id="meta-nim">—</b></span>
+            <span>Program Studi: <b id="meta-prodi">—</b></span>
+            <span>Angkatan: <b id="meta-angkatan">—</b></span>
+            <span>Mata Kuliah: <b id="meta-mk">—</b></span>
+            <span>Kelas: <b id="meta-kelas">—</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Ringkasan (4 kartu) ---- -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="ring">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle class="ring-track" cx="29" cy="29" r="24"/>
+            <circle class="ring-value" id="ring-kehadiran" cx="29" cy="29" r="24" stroke="#15803D"/>
+          </svg>
+          <div class="ring-label" id="ring-kehadiran-label">–</div>
+        </div>
+        <div class="summary-text">
+          <div class="label">Kehadiran</div>
+          <div class="value" id="sum-kehadiran">–</div>
+          <div class="sub" id="sum-kehadiran-sub">–</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="ring">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle class="ring-track" cx="29" cy="29" r="24"/>
+            <circle class="ring-value" id="ring-tugas" cx="29" cy="29" r="24" stroke="#2563EB"/>
+          </svg>
+          <div class="ring-label" id="ring-tugas-label">–</div>
+        </div>
+        <div class="summary-text">
+          <div class="label">Tugas Terkumpul</div>
+          <div class="value" id="sum-tugas">–</div>
+          <div class="sub">dari 6 Tugas KKNI</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="ring">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle class="ring-track" cx="29" cy="29" r="24"/>
+            <circle class="ring-value" id="ring-nilai" cx="29" cy="29" r="24" stroke="#B45309"/>
+          </svg>
+          <div class="ring-label" id="ring-nilai-label">–</div>
+        </div>
+        <div class="summary-text">
+          <div class="label">Rata-rata Nilai</div>
+          <div class="value" id="sum-nilai">–</div>
+          <div class="sub">dari tugas yang dinilai</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="ring">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle class="ring-track" cx="29" cy="29" r="24"/>
+            <circle class="ring-value" id="ring-rapi" cx="29" cy="29" r="24" stroke="#1B3A5C"/>
+          </svg>
+          <div class="ring-label" id="ring-rapi-label">–</div>
+        </div>
+        <div class="summary-text">
+          <div class="label">SKOR RAPI</div>
+          <div class="value" id="sum-rapi">–</div>
+          <div class="sub">Seluruh Tugas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PANEL: DASHBOARD ================= -->
+    <section class="section-panel active" id="panel-dashboard">
+      <div class="panel-card">
+        <div class="panel-head">
+          <div>
+            <h2>Perkembangan Nilai 6 Tugas KKNI</h2>
+            <p class="panel-desc">Tugas Rutin, CJR, CBR, Mini Riset, Rekayasa Ide, TBP.</p>
+          </div>
+        </div>
+        <div class="chart-box tall"><canvas id="chart-nilai"></canvas></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-card">
+          <h2>Ringkasan Kehadiran</h2>
+          <p class="panel-desc">Grafik perbandingan jumlah Hadir, Izin, Sakit, dan Alpa.</p>
+          <div class="chart-box" style="max-width:260px;margin:14px auto 0;"><canvas id="chart-kehadiran-mini"></canvas></div>
+        </div>
+        <div class="panel-card">
+          <h2>Rata-rata Indikator RAPI</h2>
+          <p class="panel-desc">Gabungan seluruh tugas yang sudah dinilai.</p>
+          <div class="chart-box"><canvas id="chart-rapi-mini"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PANEL: KEHADIRAN ================= -->
+    <section class="section-panel" id="panel-kehadiran">
+      <div class="panel-card">
+        <div class="panel-head">
+          <div>
+            <h2>Rekap Kehadiran</h2>
+            <p class="panel-desc" id="kehadiran-desc">–</p>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="n" id="keh-total">–</div><div class="t">Total Pertemuan</div></div>
+          <div class="stat-box"><div class="n" id="keh-hadir">–</div><div class="t">Jumlah Hadir</div></div>
+          <div class="stat-box"><div class="n" id="keh-persen">–</div><div class="t">Persentase Kehadiran</div></div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>Detail Pertemuan</h2>
+        <div class="table-scroll" style="margin-top:12px;">
+          <table>
+            <thead><tr><th>Pertemuan</th><th>Tanggal</th><th>Status</th><th>Kegiatan</th></tr></thead>
+            <tbody id="tbl-kehadiran"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="empty-kehadiran" style="display:none;">
+          <p>Belum ada data kehadiran.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PANEL: TUGAS & NILAI ================= -->
+    <section class="section-panel" id="panel-tugas">
+      <div class="panel-card">
+        <div class="panel-head">
+          <div>
+            <h2>Statistik 6 Tugas KKNI</h2>
+            <p class="panel-desc">Tugas Rutin, CJR, CBR, Mini Riset, Rekayasa Ide, TBP.</p>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="n" id="tg-total">–</div><div class="t">Total Tugas</div></div>
+          <div class="stat-box"><div class="n" id="tg-kumpul">–</div><div class="t">Tugas Terkumpul</div></div>
+          <div class="stat-box"><div class="n" id="tg-belum">–</div><div class="t">Belum Terkumpul</div></div>
+        </div>
+        <div class="progress-line" style="margin-top:16px;">
+          <div class="pl-top"><b>Progres pengumpulan</b><span id="tg-progress-label">–</span></div>
+          <div class="progress-track"><div class="progress-fill" id="tg-progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-head">
+          <h2>Daftar 6 Tugas KKNI</h2>
+          <div class="filter-row" id="tugas-filter">
+            <button class="chip active" data-filter="semua">Semua</button>
+            <button class="chip" data-filter="terkumpul">Terkumpul</button>
+            <button class="chip" data-filter="belum">Belum Terkumpul</button>
+            <button class="chip" data-filter="dinilai">Sudah Dinilai</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Tugas</th><th>Pengumpulan</th><th>Tanggal / Keterangan</th><th>Nilai</th><th>Status</th></tr></thead>
+            <tbody id="tbl-tugas"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="empty-tugas" style="display:none;">
+          <p>Belum ada data tugas.</p>
+        </div>
+      </div>
+
+      <!-- Nilai Ujian: terpisah dari 6 Tugas KKNI -->
+      <div class="panel-card">
+        <h2>Nilai Ujian</h2>
+        <p class="panel-desc">UTS dan UAS ditampilkan terpisah dari 6 Tugas KKNI.</p>
+        <div class="stat-row cols-2" style="margin-top:14px;" id="ujian-cards"></div>
+      </div>
+    </section>
+
+    <!-- ================= PANEL: RAPI ================= -->
+    <section class="section-panel" id="panel-rapi">
+      <div class="panel-card">
+        <h2>Responsible AI Practice (RAPI)</h2>
+        <p class="panel-desc" style="margin-top:6px; line-height:1.6;">
+          RAPI menggambarkan praktik penggunaan AI oleh mahasiswa dalam mengerjakan tugas, dilihat dari empat
+          indikator per tugas: seberapa besar penggunaan AI (<b>AI Usage</b>), seberapa besar ketergantungan
+          padanya (<b>AI Reliance</b>), seberapa hasil AI diperiksa ulang (<b>AI Verification</b>), dan
+          tanggung jawab serta keterbukaan proses penggunaan AI (<b>Akuntabilitas &amp; Transparansi</b>).
+        </p>
+        <p class="panel-desc" style="margin-top:6px; line-height:1.6;">
+       Skor RAPI dihitung dari empat indikator per tugas yang terdapat pada item pertanyaan deklarasi AI di Form Pengumpulan Tugas: AI Usage (Q1, skala 0–5, bersifat deskriptif), AI Reliance (rata-rata Q4 & Q5, skala 1–5), AI Verification (rata-rata Q6, Q7, Q8, skala 1–5), serta Akuntabilitas & Transparansi (rata-rata Q9 skala 1–5 dan Q10 skala 1–40. Sedangkan untuk Q2 dan Q3 adalah AI Purpose dan AI Tool pada pertanyaan deklarasi AI bersifat deskriptif dan tidak diikutsertakan dalam pengolahan Skor RAPI.
+       </p>
+
+      <p class="panel-desc" style="margin-top:6px; line-height:1.6;">
+      Khusus untuk tugas yang dikerjakan tanpa menggunakan AI sama sekali, keempat indikator RAPI di atas tidak berlaku dan tidak dihitung, karena tidak ada praktik penggunaan AI yang bisa dinilai. Skor RAPI (baik dari tugas yang menggunakan AI maupun keterangan tidak menggunakan AI) tetap menjadi dasar pengambilan sampel acak untuk pemeriksaan integritas akademik (random academic checking), yang berlaku bagi seluruh mahasiswa tanpa terkecuali.
+            </p>
+      </div>
+
+      <div class="panel-card">
+      <h2>Perkembangan Indikator RAPI</h2>
+        <p class="panel-desc">Pergerakan skor tiap indikator antar tugas yang sudah dinilai.</p>
+          <div class="chart-box tall"><canvas id="chart-rapi-trend"></canvas></div>
+          <div id="rapi-trend-narasi"></div>
+      </div>
+
+      <div class="panel-card">
+        <h2>Detail per Tugas</h2>
+        <div id="rapi-detail" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ================= PANEL: PROFIL ================= -->
+    <section class="section-panel" id="panel-profil">
+      <div class="panel-card">
+        <h2>Profil Mahasiswa</h2>
+        <div class="profile-grid" style="margin-top:14px;">
+          <div class="profile-item"><div class="l">Nama</div><div class="v" id="pf-nama">–</div></div>
+          <div class="profile-item"><div class="l">NIM</div><div class="v" id="pf-nim">–</div></div>
+          <div class="profile-item"><div class="l">Program Studi</div><div class="v" id="pf-prodi">–</div></div>
+          <div class="profile-item"><div class="l">Angkatan</div><div class="v" id="pf-angkatan">–</div></div>
+          <div class="profile-item"><div class="l">Mata Kuliah</div><div class="v" id="pf-mk">–</div></div>
+          <div class="profile-item"><div class="l">Kelas</div><div class="v" id="pf-kelas">–</div></div>
+        </div>
+      </div>
+            <div class="panel-card">
+        <h2>Gambaran Nilai Akhir</h2>
+        <p class="panel-desc">Proyeksi nilai akhir berdasarkan komponen Kehadiran (5%), UTS (20%), UAS (25%), dan Tugas KKNI (50%) yang sudah masuk sejauh ini.</p>
+
+        <div class="stat-row cols-2" style="margin-top:16px;">
+          <div class="stat-box"><div class="n" id="na-nilai-akhir">–</div><div class="t">Nilai Akhir</div></div>
+          <div class="stat-box"><div class="n" id="na-grade">–</div><div class="t">Grade</div></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="progress-line">
+            <div class="pl-top"><b>Kehadiran (5%)</b><span id="na-kehadiran-label">–</span></div>
+            <div class="progress-track"><div class="progress-fill" id="na-kehadiran-fill" style="width:0%"></div></div>
+          </div>
+          <div class="progress-line">
+            <div class="pl-top"><b>UTS (20%)</b><span id="na-uts-label">–</span></div>
+            <div class="progress-track"><div class="progress-fill" id="na-uts-fill" style="width:0%"></div></div>
+          </div>
+          <div class="progress-line">
+            <div class="pl-top"><b>UAS (25%)</b><span id="na-uas-label">–</span></div>
+            <div class="progress-track"><div class="progress-fill" id="na-uas-fill" style="width:0%"></div></div>
+          </div>
+          <div class="progress-line">
+            <div class="pl-top"><b>Tugas KKNI (50%)</b><span id="na-tugas-label">–</span></div>
+            <div class="progress-track"><div class="progress-fill" id="na-tugas-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="empty-state" id="na-empty" style="display:none;">
+          <p>Data nilai akhir belum tersedia untuk NIM ini.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Navigasi bawah khusus mobile -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="active" data-panel="dashboard">Dashboard</button>
+    <button data-panel="kehadiran">Kehadiran</button>
+    <button data-panel="tugas">Tugas</button>
+    <button data-panel="rapi">RAPI</button>
+    <button data-panel="profil">Profil</button>
+  </nav>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
