@@ -56,14 +56,37 @@ $('btn-admin-tampilkan').addEventListener('click', () => {
   muatRandomChecking();
 });
 
+/** Cari nama tampilan Mata Kuliah dari kodenya, pakai data yang sudah dimuat di daftarMatkul. */
+function namaMatkulDariKode(kode) {
+  const m = daftarMatkul.find(m => m.matkulKode === kode);
+  return m ? m.matkulNama : kode;
+}
+
+/** Cari nama tampilan Kelas dari kodenya (dicocokkan juga dengan Mata Kuliahnya). */
+function namaKelasDariKode(matkulKode, kelasKode) {
+  const k = daftarMatkul.find(m => m.matkulKode === matkulKode && m.kelasKode === kelasKode);
+  return k ? k.kelasNama : kelasKode;
+}
+
 function muatRekap() {
   const url = WEBAPP_URL + '?action=adminRekap&secret=' + encodeURIComponent(ADMIN_SECRET) +
     '&matkul=' + encodeURIComponent(currentMatkul) + '&kelas=' + encodeURIComponent(currentKelas);
   jsonp(url).then(resp => {
-    if (!resp.success) { $('tbl-rekap').innerHTML = `<tr><td colspan="9">${resp.message}</td></tr>`; return; }
-    $('tbl-rekap').innerHTML = resp.data.map(r => `
+    if (!resp.success) { $('tbl-rekap').innerHTML = `<tr><td colspan="7">${resp.message}</td></tr>`; return; }
+
+    // --- Baris info Mata Kuliah / Kelas / Prodi (dulu jadi 3 kolom, sekarang cukup 1 baris) ---
+    const daftarProdi = [...new Set(resp.data.map(r => r.prodi).filter(Boolean))];
+    const teksProdi = daftarProdi.length ? daftarProdi.join(', ') : '-';
+    $('rekap-context-info').innerHTML =
+      `Mata Kuliah: <b>${namaMatkulDariKode(currentMatkul)}</b> &middot; ` +
+      `Kelas: <b>${namaKelasDariKode(currentMatkul, currentKelas)}</b> &middot; ` +
+      `Prodi: <b>${teksProdi}</b>`;
+
+    // --- Tabel sekarang 7 kolom: No, Nama, Kehadiran, Tugas KKNI, Rata-Rata Nilai KKNI, UTS, UAS ---
+    $('tbl-rekap').innerHTML = resp.data.map((r, i) => `
       <tr>
-        <td>${r.matkul}</td><td>${r.kelas}</td><td>${r.prodi}</td><td>${r.nama}</td>
+        <td>${i + 1}</td>
+        <td>${r.nama}</td>
         <td>${r.jumlahHadir} / ${r.totalPertemuan}</td>
         <td>${r.jumlahTugasKumpul} / ${r.totalTugas}</td>
         <td>${r.rataNilaiKKNI ?? '-'}</td>
