@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — Monitoring Perkuliahan</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="page-admin-login" class="login-card" style="margin:60px auto;max-width:360px;">
+  <h1>Dashboard Admin</h1>
+  <p class="login-sub">Masuk untuk mengakses rekap kelas & random checking</p>
+  <div class="login-form">
+    <label for="admin-password">Kata Sandi</label>
+    <input id="admin-password" type="password" placeholder="Masukkan kata sandi admin">
+    <div class="login-error" id="admin-login-error"></div>
+    <button class="btn-primary" id="btn-admin-login"><span class="btn-label">Masuk</span></button>
+  </div>
+</div>
+
+<div id="page-admin-pilih" style="display:none;max-width:360px;margin:60px auto;" class="login-card">
+  <h1>Pilih Kelas</h1>
+  <div class="login-form">
+    <label for="admin-matkul-select">Mata Kuliah</label>
+    <select id="admin-matkul-select"><option value="">Memuat...</option></select>
+    <label for="admin-kelas-select" style="margin-top:14px;">Kelas</label>
+    <select id="admin-kelas-select"><option value="">Pilih mata kuliah dahulu</option></select>
+    <button class="btn-primary" id="btn-admin-tampilkan" style="margin-top:16px;"><span class="btn-label">Tampilkan Dashboard</span></button>
+  </div>
+</div>
+
+<div id="page-admin-dashboard" style="display:none;max-width:1100px;margin:24px auto;padding:0 16px;">
+  <div class="panel-card">
+    <h2>A. Rekap Seluruh Kelas</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Mata Kuliah</th><th>Kelas</th><th>Prodi</th><th>Nama</th>
+          <th>Kehadiran</th><th>Tugas Terkumpul</th><th>Rata Nilai KKNI</th><th>UTS</th><th>UAS</th>
+        </tr></thead>
+        <tbody id="tbl-rekap"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel-card">
+    <h2>B. Random Academic Checking</h2>
+    <p class="panel-desc">40% mahasiswa dipilih acak dari yang sudah mengumpulkan tiap jenis tugas.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>No.</th><th>Jenis Tugas</th><th>Mahasiswa Terpilih (40%)</th><th></th></tr></thead>
+        <tbody id="tbl-random-checking"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js?v=20260905"></script>
+</body>
+</html>
