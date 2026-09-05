@@ -82,7 +82,7 @@ function muatRekap() {
       `Kelas: <b>${namaKelasDariKode(currentMatkul, currentKelas)}</b> &middot; ` +
       `Prodi: <b>${teksProdi}</b>`;
 
-    // --- Tabel sekarang 7 kolom: No, Nama, Kehadiran, Tugas KKNI, Rata-Rata Nilai KKNI, UTS, UAS ---
+    // --- Tabel 7 kolom: No, Nama, Kehadiran, Tugas KKNI, Rata-Rata Nilai KKNI, UTS, UAS ---
     $('tbl-rekap').innerHTML = resp.data.map((r, i) => `
       <tr>
         <td>${i + 1}</td>
@@ -94,6 +94,13 @@ function muatRekap() {
         <td>${r.nilaiUAS ?? '-'}</td>
       </tr>`).join('');
   });
+}
+
+/** Ambil NIM dari satu entri mahasiswaTerpilih, apa pun bentuk datanya (string NIM langsung, atau objek {nim, nama, ...}). */
+function nimDariEntriTerpilih(m) {
+  if (m === null || m === undefined) return '';
+  if (typeof m === 'string' || typeof m === 'number') return m;
+  return m.nim ?? m.NIM ?? '';
 }
 
 function muatRandomChecking(acakUlangTugas) {
@@ -108,7 +115,7 @@ function muatRandomChecking(acakUlangTugas) {
       <tr>
         <td>${d.no}</td>
         <td>${d.jenisTugas}</td>
-        <td>${d.mahasiswaTerpilih.join(', ') || '<i>Belum ada yang mengumpulkan</i>'}</td>
+        <td>${d.mahasiswaTerpilih.map(nimDariEntriTerpilih).join(', ') || '<i>Belum ada yang mengumpulkan</i>'}</td>
         <td><button class="btn-ghost-light" onclick="muatRandomChecking('${d.jenisTugas}')">Acak Ulang</button></td>
       </tr>`).join('');
   });
