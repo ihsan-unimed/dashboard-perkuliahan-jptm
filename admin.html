@@ -14,7 +14,11 @@
   <p class="login-sub">Masuk untuk mengakses rekap kelas & random checking</p>
   <div class="login-form">
     <label for="admin-password">Kata Sandi</label>
-    <input id="admin-password" type="password" placeholder="Masukkan kata sandi admin">
+    <form onsubmit="return false;" autocomplete="off">
+  <input id="admin-password" name="admin-password" type="password"
+         placeholder="Masukkan kata sandi admin"
+         autocomplete="new-password">
+</form>
     <div class="login-error" id="admin-login-error"></div>
     <button class="btn-primary" id="btn-admin-login"><span class="btn-label">Masuk</span></button>
   </div>
